@@ -9,7 +9,7 @@ class LibraryManagementSystem:
 
     def create_tables(self):
         """Creates the necessary tables in the database if they don't exist."""
-        # Books table
+        
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS books (
                 isbn TEXT PRIMARY KEY,
@@ -18,7 +18,7 @@ class LibraryManagementSystem:
                 quantity INTEGER DEFAULT 1
             )
         ''')
-        # Members table
+       
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS members (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +26,7 @@ class LibraryManagementSystem:
                 contact TEXT
             )
         ''')
-        # Transactions table
+       
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,7 +40,7 @@ class LibraryManagementSystem:
         ''')
         self.conn.commit()
 
-    # --- BOOK MANAGEMENT FUNCTIONS ---
+   
     def add_book(self):
         isbn = input("Enter ISBN: ")
         title = input("Enter book title: ")
@@ -93,7 +93,7 @@ class LibraryManagementSystem:
             self.conn.commit()
             print("Book deleted successfully.")
 
-    # --- MEMBER MANAGEMENT FUNCTIONS ---
+   
     def add_member(self):
         name = input("Enter member name: ")
         contact = input("Enter contact info: ")
@@ -111,19 +111,19 @@ class LibraryManagementSystem:
         for member in members:
             print(f"ID: {member[0]}, Name: {member[1]}, Contact: {member[2]}")
 
-    # --- TRANSACTION FUNCTIONS ---
+
     def borrow_book(self):
         member_id = input("Enter your member ID: ")
         isbn = input("Enter ISBN of the book to borrow: ")
 
-        # Check if book exists and is available
+
         self.cursor.execute("SELECT quantity FROM books WHERE isbn = ?", (isbn,))
         result = self.cursor.fetchone()
         if not result or result[0] < 1:
             print("Book is not available for borrowing.")
             return
 
-        # Check if member exists
+
         self.cursor.execute("SELECT id FROM members WHERE id = ?", (member_id,))
         if not self.cursor.fetchone():
             print("Invalid member ID.")
@@ -133,7 +133,7 @@ class LibraryManagementSystem:
         try:
             self.cursor.execute("INSERT INTO transactions (book_isbn, member_id, borrow_date) VALUES (?, ?, ?)",
                                (isbn, member_id, borrow_date))
-            # Decrease book quantity
+     
             self.cursor.execute("UPDATE books SET quantity = quantity - 1 WHERE isbn = ?", (isbn,))
             self.conn.commit()
             print("Book borrowed successfully! Please return on time.")
@@ -144,7 +144,7 @@ class LibraryManagementSystem:
         isbn = input("Enter ISBN of the book to return: ")
         member_id = input("Enter your member ID: ")
 
-        # Find the active transaction
+     
         self.cursor.execute('''SELECT id FROM transactions 
                             WHERE book_isbn=? AND member_id=? AND return_date IS NULL''',
                             (isbn, member_id))
@@ -157,7 +157,7 @@ class LibraryManagementSystem:
         # Update transaction with return date
         self.cursor.execute("UPDATE transactions SET return_date=? WHERE id=?",
                            (return_date, transaction[0]))
-        # Increase book quantity
+   
         self.cursor.execute("UPDATE books SET quantity = quantity + 1 WHERE isbn = ?", (isbn,))
         self.conn.commit()
         print("Book returned successfully. Thank you!")
@@ -176,7 +176,7 @@ class LibraryManagementSystem:
         for book in books:
             print(f"ISBN: {book[0]}, Title: {book[1]}, Author: {book[2]}, Available: {book[3]}")
 
-    # --- MAIN MENU ---
+
     def main_menu(self):
         while True:
             print("\n===== Library Management System =====")
