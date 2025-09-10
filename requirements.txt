@@ -1,0 +1,2 @@
+# No external dependencies required for this project.
+# Built with Python standard library (sqlite3, datetime).
